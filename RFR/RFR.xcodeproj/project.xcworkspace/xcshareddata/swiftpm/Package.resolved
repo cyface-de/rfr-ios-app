@@ -1,0 +1,51 @@
+{
+  "originHash" : "398c8f2062750abdddad60446ad5de1c30e8073e00bc25ca37293154ac7f66b5",
+  "pins" : [
+    {
+      "identity" : "appauth-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/openid/AppAuth-iOS.git",
+      "state" : {
+        "revision" : "2781038865a80e2c425a1da12cc1327bcd56501f",
+        "version" : "1.7.6"
+      }
+    },
+    {
+      "identity" : "datacompression",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mw99/DataCompression.git",
+      "state" : {
+        "revision" : "5ab15951321b08b74511601cbd0497667649d70b",
+        "version" : "3.8.0"
+      }
+    },
+    {
+      "identity" : "ios-sensor-library",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cyface-de/ios-sensor-library",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b53b98f39fb4778da70127006ec2ae082baa6616"
+      }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa/",
+      "state" : {
+        "revision" : "56bfb7e723c76614be4c0861ee820ccbaed14c6d",
+        "version" : "8.41.0"
+      }
+    },
+    {
+      "identity" : "swift-protobuf",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-protobuf.git",
+      "state" : {
+        "revision" : "ebc7251dd5b37f627c93698e4374084d98409633",
+        "version" : "1.28.2"
+      }
+    }
+  ],
+  "version" : 3
+}
