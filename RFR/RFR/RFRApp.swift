@@ -40,14 +40,14 @@ struct RFRApp: App {
             // Enable tracing to capture 100% of transactions for performance monitoring.
             // Use 'options.tracesSampleRate' to set the sampling rate.
             // We recommend setting a sample rate in production.
-            options.enableTracing = enableTracing
+            options.tracesSampleRate = 1.0
         }
     }
 
     var body: some Scene {
         WindowGroup {
             if appModel.initialized {
-                /*InitializationView(
+                InitializationView(
                     measurementsViewModel: appModel.measurementsViewModel,
                     synchronizationViewModel: appModel.syncViewModel,
                     liveViewModel: appModel.liveViewModel,
@@ -59,7 +59,7 @@ struct RFRApp: App {
                         transaction.animation = nil
                     }
                 }
-                #endif*/
+                #endif
             } else if let error = appModel.error {
                 //ErrorView(error: error)
             } else {
@@ -80,15 +80,15 @@ class AppModel: ObservableObject {
     /// This applications configuration file.
     var config: Config = try! ConfigLoader.load()
     /// The view model used by the live view displayed while capturing data on the main view.
-    //let liveViewModel: LiveViewModel
+    let liveViewModel: LiveViewModel
     /// View model used to synchronize data to a Cyface Data Collector service.
-    //let syncViewModel: SynchronizationViewModel
+    let syncViewModel: SynchronizationViewModel
     /// View model used to manage information about the complete collection of local measurements.
-    //let measurementsViewModel: MeasurementsViewModel
+    let measurementsViewModel: MeasurementsViewModel
     /// View model used to manage voucher progress and download vouchers from a voucher server.
-    //var voucherViewModel: VoucherViewModel
+    var voucherViewModel: VoucherViewModel
     /// The authenticator used by this application to communicate with the Cyface Data Collector and the voucher server.
-    //let authenticator: Authenticator
+    let authenticator: Authenticator
     /// Tells the view about errors occuring during initialization.
     @Published var error: Error?
     /// A flag that is set to `true` if the initial setup process has completed.
@@ -112,7 +112,7 @@ class AppModel: ObservableObject {
             let apiEndpoint = try config.getApiEndpoint()
             let incentivesUrl = try config.getIncentivesUrl()
 
-            /*self.authenticator = AppModel.createAuthenticator(
+            self.authenticator = AppModel.createAuthenticator(
                 issuer: issuer,
                 redirectURI: redirectURI,
                 apiEndpoint: apiEndpoint,
@@ -150,9 +150,9 @@ class AppModel: ObservableObject {
                         url: incentivesUrl
                     ),
                 voucherRequirements: voucherRequirements
-            )*/
+            )
 
-            /*Task {
+            Task {
                 do {
                     try await dataStoreStack.setup()
                     appDelegate.delegate = uploadProcessBuilder
@@ -167,13 +167,13 @@ class AppModel: ObservableObject {
                         }
                         try context.save()
                     }
-                    try await measurementsViewModel.setup()
+                    //try await measurementsViewModel.setup()
 
                     initialized = true
                 } catch {
                     self.error = error
                 }
-            }*/
+            }
         } catch {
             fatalError("Unable to load Application")
         }

@@ -21,6 +21,7 @@ import Foundation
 import DataCapturing
 import CoreData
 import OSLog
+import Combine
 
 /**
  An authenticator that does not communicate with any server and only provides a fake authentication token.
@@ -97,6 +98,70 @@ struct MockVouchers: Vouchers {
     func requestVoucher() async throws -> Voucher {
         return voucher
     }
+}
+
+struct MockUploadProcessBuilder: UploadProcessBuilder {
+    func build() -> any DataCapturing.UploadProcess {
+        return MockUploadProcess()
+    }
+}
+
+struct MockUploadProcess: UploadProcess {
+    var uploadStatus: PassthroughSubject<DataCapturing.UploadStatus, Never> = PassthroughSubject()
+
+    mutating func upload(measurement: DataCapturing.FinishedMeasurement) async throws -> any DataCapturing.Upload {
+        return MockUpload()
+    }
+}
+
+struct MockUploadFactory: UploadFactory {
+    func upload(for measurement: DataCapturing.FinishedMeasurement) -> any DataCapturing.Upload {
+        return MockUpload()
+    }
+    
+    func upload(for session: DataCapturing.UploadSession) throws -> any DataCapturing.Upload {
+        return MockUpload()
+    }
+}
+
+struct MockUpload: DataCapturing.Upload {
+    var failedUploadsCounter: Int = 0
+
+    var measurement: DataCapturing.FinishedMeasurement = FinishedMeasurement(identifier: 0)
+
+    var location: URL?
+    
+    func metaData() throws -> DataCapturing.MetaData {
+        MetaData(
+            locationCount: UInt64(measurement.tracks.map { track in track.locations.count }.reduce(0) { sum, summand in sum + summand}),
+            formatVersion: 4,
+            startLocLat: 1.0,
+            startLocLon: 1.0,
+            startLocTS: Date(),
+            endLocLat: 2.0,
+            endLocLon: 2.0,
+            endLocTS: Date(),
+            measurementId: measurement.identifier,
+            osVersion: "18.0",
+            applicationVersion: "12.0.0",
+            length: 20.0,
+            modality: "BICYCLE"
+        )
+    }
+    
+    func data() throws -> Data {
+        return Data()
+    }
+    
+    func onSuccess() throws {
+        // Nothing to do here
+    }
+    
+    func onFailed() throws {
+        // Nothing to do here
+    }
+    
+
 }
 
 #endif
