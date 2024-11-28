@@ -24,8 +24,6 @@ import Sentry
  Entry point to the application showing the first view.
 
  - Author: Klemens Muthmann
- - Version: 1.0.1
- - Since: 3.1.2
  */
 @main
 struct RFRApp: App {
@@ -34,7 +32,7 @@ struct RFRApp: App {
 
     /// Setup Sentry tracing for the whole application.
     init() {
-        /*let enableTracing = (try? appModel.config.getEnableSentryTracing()) ?? false
+        let enableTracing = (try? appModel.config.getEnableSentryTracing()) ?? false
         SentrySDK.start { options in
             options.dsn = "https://cfb4e7e71da45d9d7fc312d2d350c951@o4506585719439360.ingest.sentry.io/4506585723437056"
             options.debug = false // Enabled debug when first installing is always helpful
@@ -43,7 +41,7 @@ struct RFRApp: App {
             // Use 'options.tracesSampleRate' to set the sampling rate.
             // We recommend setting a sample rate in production.
             options.enableTracing = enableTracing
-        }*/
+        }
     }
 
     var body: some Scene {
@@ -76,13 +74,11 @@ struct RFRApp: App {
  Those errors are published via the ``error`` property of this class.
 
  - Author: Klemens Muthmann
- - Version: 1.0.2
- - Since: 3.1.2
  */
 class AppModel: ObservableObject {
     // MARK: - Properties
     /// This applications configuration file.
-    //var config: Config = try! ConfigLoader.load()
+    var config: Config = try! ConfigLoader.load()
     /// The view model used by the live view displayed while capturing data on the main view.
     //let liveViewModel: LiveViewModel
     /// View model used to synchronize data to a Cyface Data Collector service.
@@ -109,12 +105,12 @@ class AppModel: ObservableObject {
     /// Please refer to ``initialized`` to see if initialization has actually finished.
     init() {
         do {
-            //let clientId = config.clientId
-            //let uploadEndpoint = try config.getUploadEndpoint()
-            //let issuer = try config.getIssuerUri()
-            //let redirectURI = try config.getRedirectUri()
-            //let apiEndpoint = try config.getApiEndpoint()
-            //let incentivesUrl = try config.getIncentivesUrl()
+            let clientId = config.clientId
+            let uploadEndpoint = try config.getUploadEndpoint()
+            let issuer = try config.getIssuerUri()
+            let redirectURI = try config.getRedirectUri()
+            let apiEndpoint = try config.getApiEndpoint()
+            let incentivesUrl = try config.getIncentivesUrl()
 
             /*self.authenticator = AppModel.createAuthenticator(
                 issuer: issuer,
@@ -185,10 +181,10 @@ class AppModel: ObservableObject {
 
     // MARK: - Methods
     /// A method to create the correct authenticator for either a testing or a production environment.
-    /*private static func createAuthenticator(issuer: URL, redirectURI: URL, apiEndpoint: URL, clientId: String) -> Authenticator {
+    private static func createAuthenticator(issuer: URL, redirectURI: URL, apiEndpoint: URL, clientId: String) -> Authenticator {
         #if DEBUG
         if CommandLine.arguments.contains("enable-testing") {
-            //return MockAuthenticator()
+            return MockAuthenticator()
         } else {
             return OAuthAuthenticator(
                 issuer: issuer,
@@ -205,5 +201,5 @@ class AppModel: ObservableObject {
             clientId: clientId
         )
         #endif
-    }*/
+    }
 }
