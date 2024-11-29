@@ -31,6 +31,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AA0D17CF2CF9FC66007E8863 /* RFR-CI.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "RFR-CI.xctestplan"; sourceTree = "<group>"; };
+		AA0D17D02CF9FCBE007E8863 /* RFR.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RFR.xctestplan; sourceTree = "<group>"; };
 		AAFA7F9D2CF74CA600DFC4BE /* RFR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RFR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAFA7FAD2CF74CA800DFC4BE /* RFRTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RFRTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAFA7FB72CF74CA800DFC4BE /* RFRUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RFRUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +101,8 @@
 		AAFA7F942CF74CA600DFC4BE = {
 			isa = PBXGroup;
 			children = (
+				AA0D17CF2CF9FC66007E8863 /* RFR-CI.xctestplan */,
+				AA0D17D02CF9FCBE007E8863 /* RFR.xctestplan */,
 				AAFA7F9F2CF74CA600DFC4BE /* RFR */,
 				AAFA7FB02CF74CA800DFC4BE /* RFRTests */,
 				AAFA7FBA2CF74CA800DFC4BE /* RFRUITests */,

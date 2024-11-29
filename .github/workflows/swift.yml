@@ -20,4 +20,4 @@ jobs:
 
       - name: build archive
         run: |
-          xcodebuild -project RFR.xcodeproj -scheme RFR -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=latest' clean test
+          xcodebuild -project RFR.xcodeproj -scheme RFR -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=latest' clean test -testPlan RFR-CI

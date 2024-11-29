@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "BD4CF33B-4520-4861-945C-FAF3395D743D",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:RFR.xcodeproj",
+        "identifier" : "AAFA7FB62CF74CA800DFC4BE",
+        "name" : "RFRUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RFR.xcodeproj",
+        "identifier" : "AAFA7FAC2CF74CA800DFC4BE",
+        "name" : "RFRTests"
+      }
+    }
+  ],
+  "version" : 1
+}

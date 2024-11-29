@@ -1,0 +1,37 @@
+{
+  "configurations" : [
+    {
+      "id" : "B8E6C54B-4C4B-4289-BBF4-AEA5C7CC9C95",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "SynchronizeMeasurementUITest",
+        "SynchronizeMeasurementUITest\/testLoginWorks()",
+        "SynchronizeMeasurementUITest\/testPauseMeasurement()",
+        "SynchronizeMeasurementUITest\/testRunMeasurement()"
+      ],
+      "target" : {
+        "containerPath" : "container:RFR.xcodeproj",
+        "identifier" : "AAFA7FB62CF74CA800DFC4BE",
+        "name" : "RFRUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RFR.xcodeproj",
+        "identifier" : "AAFA7FAC2CF74CA800DFC4BE",
+        "name" : "RFRTests"
+      }
+    }
+  ],
+  "version" : 1
+}
