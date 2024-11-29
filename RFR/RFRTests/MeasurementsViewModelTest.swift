@@ -20,17 +20,17 @@
 import XCTest
 import DataCapturing
 import CoreData
-@testable import Ready_for_Robots_Development
+@testable import RFR
 
 /**
 Test calls to the ``MeasurementsViewModel``.
 
  - Author: Klemens Muthmann
  */
-final class MeasurementsViewModelTest: XCTestCase {
+class MeasurementsViewModelTest: XCTestCase {
 
     /// Test if setting up a ``MeasurementsViewModel`` works as expected.
-    func test() async throws {
+    func testInitialization() async throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         // Any test you write for XCTest can be annotated as throws and async.
