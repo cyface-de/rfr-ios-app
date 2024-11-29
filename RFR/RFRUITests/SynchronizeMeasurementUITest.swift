@@ -42,9 +42,12 @@ final class SynchronizeMeasurementUITest: XCTestCase {
         app.launch()
 
         // Allow location updates
-        addUIInterruptionMonitor(withDescription: "Automatically allow location permissions") { alert in
-            alert.buttons["OK"].tap()
-            return true
+        addUIInterruptionMonitor(withDescription: "Location Permission Alert") { alert in
+            for i in 0..<alert.buttons.count - 1 {
+                            let buttonElement = alert.buttons.element(boundBy: i)
+                            print("Button Label: \(buttonElement.label)")
+                        }
+                        return true
         }
 
         let loginRegisterButton = app.buttons["Anmelden oder Registrieren"]
@@ -77,9 +80,13 @@ final class SynchronizeMeasurementUITest: XCTestCase {
         XCTAssert(loginRegisterButton.waitForExistence(timeout: 1))
         loginRegisterButton.tap()
 
-        addUIInterruptionMonitor(withDescription: "Automatically allow location permissions") { alert in
-            alert.buttons["OK"].tap()
-            return true
+        // Allow location updates
+        addUIInterruptionMonitor(withDescription: "Location Permission Alert") { alert in
+            for i in 0..<alert.buttons.count - 1 {
+                            let buttonElement = alert.buttons.element(boundBy: i)
+                            print("Button Label: \(buttonElement.label)")
+                        }
+                        return true
         }
 
         let playButton = app.buttons["de.cyface.rfr.button.play"]

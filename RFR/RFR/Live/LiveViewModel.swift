@@ -61,15 +61,20 @@ class LiveViewModel: ObservableObject {
     /// The current ``Measurement`` presented by the current ``LiveView``.
     var measurement: DataCapturing.Measurement {
         get {
+
             if let measurement = self._measurement {
                 return measurement
             } else {
                 let locationCapturer = SmartphoneLocationCapturer()
                 let sensorCapturer = SmartphoneSensorCapturer()
-                let measurement = MeasurementImpl(
-                    sensorCapturer: sensorCapturer,
-                    locationCapturer: locationCapturer
-                )
+                let measurement = if let measurement = try? dataStorageProcess.pausedMeasurement(sensorCapturer: sensorCapturer, locationCapturer: locationCapturer, onFinishedMeasurement) {
+                    measurement
+                } else {
+                    MeasurementImpl(
+                        sensorCapturer: sensorCapturer,
+                        locationCapturer: locationCapturer
+                    )
+                }
 
                 // Forward finished messages so the UI can update accordingly.
                 let locationFlow = locationFlow()
@@ -243,7 +248,7 @@ class LiveViewModel: ObservableObject {
     func onPlayPressed() throws {
         if measurement.isPaused {
             try measurement.resume()
-        } else if !measurement.isPaused && !measurement.isRunning{ // Is stopped
+        } else if !measurement.isPaused && !measurement.isRunning { // Is stopped
             let identifier  = try dataStorageProcess.subscribe(to: measurement,"BICYCLE", onFinishedMeasurement)
             measurementName = String(localized: "measurement \(identifier)", comment: "Title label of a running measurement.")
             try measurement.start()
