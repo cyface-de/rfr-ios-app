@@ -127,11 +127,11 @@ class MeasurementsViewModel: ObservableObject {
                 maximumLongitude = max(maximumLongitude, location.lon)
             }
 
-            /*track.typedAltitudes().enumerated().forEach { (index, altitude) in
+            track.typedAltitudes().enumerated().forEach { (index, altitude) in
                 heightProfile.append(Altitude(id: Int64(index), timestamp: altitude.time!, height: altitude.altitude))
                 lowestPoint = min(lowestPoint, altitude.altitude)
                 highestPoint = max(highestPoint, altitude.altitude)
-            }*/
+            }
         }
         let inclination = Statistics.summedHeight(timelines: measurement.typedTracks())
         let distance = Statistics.coveredDistance(tracks: tracks)
