@@ -27,20 +27,29 @@ import Sentry
  */
 @main
 struct RFRApp: App {
+    /// The UIKit Application Delegate required for functionality not yet ported to SwiftUI.
+    /// Especially reacting to backround network requests needs to be handled here.
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     /// The application, which is required to store and load the authentication state of this application.
     @ObservedObject var appModel = AppModel()
+    private let sessionEventDelegate = SessionEventDelegate()
+
 
     /// Setup Sentry tracing for the whole application.
     init() {
-        let enableTracing = (try? appModel.config.getEnableSentryTracing()) ?? false
-        SentrySDK.start { options in
-            options.dsn = "https://cfb4e7e71da45d9d7fc312d2d350c951@o4506585719439360.ingest.sentry.io/4506585723437056"
-            options.debug = false // Enabled debug when first installing is always helpful
+        appDelegate.delegate = sessionEventDelegate
 
-            // Enable tracing to capture 100% of transactions for performance monitoring.
-            // Use 'options.tracesSampleRate' to set the sampling rate.
-            // We recommend setting a sample rate in production.
-            options.tracesSampleRate = 1.0
+        let enableTracing = (try? appModel.config.getEnableSentryTracing()) ?? false
+        if enableTracing {
+            SentrySDK.start { options in
+                options.dsn = "https://cfb4e7e71da45d9d7fc312d2d350c951@o4506585719439360.ingest.sentry.io/4506585723437056"
+                options.debug = false // Enabled debug when first installing is always helpful
+                
+                // Enable tracing to capture 100% of transactions for performance monitoring.
+                // Use 'options.tracesSampleRate' to set the sampling rate.
+                // We recommend setting a sample rate in production.
+                options.tracesSampleRate = 1.0
+            }
         }
     }
 
@@ -61,11 +70,22 @@ struct RFRApp: App {
                 }
                 #endif
             } else if let error = appModel.error {
-                //ErrorView(error: error)
+                ErrorView(error: error)
             } else {
                 ProgressView()
             }
         }
+    }
+}
+
+class SessionEventDelegate: BackgroundURLSessionEventDelegate {
+    /// Central place to store the bakcground session completion handler.
+    ///
+    /// For additional information please refer to the [Apple documentation](https://developer.apple.com/documentation/foundation/url_loading_system/downloading_files_in_the_background).
+    var completionHandler: (() -> Void)?
+
+    public func received(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        self.completionHandler = completionHandler
     }
 }
 
@@ -95,9 +115,7 @@ class AppModel: ObservableObject {
     ///
     /// This flag is useful to avoid having an asynchronous initializer, which SwiftUI can not handle.
     @Published var initialized = false
-    /// The UIKit Application Delegate required for functionality not yet ported to SwiftUI.
-    /// Especially reacting to backround network requests needs to be handled here.
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
 
     // MARK: - Initializers
     /// Start the setup process.
@@ -155,7 +173,7 @@ class AppModel: ObservableObject {
             Task {
                 do {
                     try await dataStoreStack.setup()
-                    appDelegate.delegate = uploadProcessBuilder
+
 
                     // Workaround to reupload previously failed uploads.
                     try dataStoreStack.wrapInContext { context in
