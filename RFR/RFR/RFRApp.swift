@@ -184,10 +184,12 @@ class AppModel: ObservableObject {
                             measurementModelObject.synchronizable = true
                         }
                         try context.save()
-                    }
-                    //try await measurementsViewModel.setup()
+                    }*/
+                    try await measurementsViewModel.setup()
 
-                    initialized = true
+                    DispatchQueue.main.async { [weak self] in
+                        self?.initialized = true
+                    }
                 } catch {
                     self.error = error
                 }
