@@ -26,8 +26,6 @@ import CoreLocation
  A collection of static utility methods for calculating statistics.
 
  - Author: Klemens Muthmann
- - Version: 1.0.0
- - Since: 3.1.2
  */
 struct Statistics {
     /// The minimum number of meters before the ascend is increased, to filter sensor noise.

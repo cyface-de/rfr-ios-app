@@ -45,8 +45,6 @@ struct OAuthLoginView {
      The delegate called from the ``LoginViewController`` on all events relevant for the SwiftUI application.
 
      - Author: Klemens Muthmann
-     - Version: 1.0.0
-     - Since: 3.1.2
      */
     class Coordinator: LoginViewControllerDelegate {
         // MARK: - Properties
