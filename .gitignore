@@ -63,3 +63,6 @@ fastlane/test_output
 
 # Vim Temporary files
 **/*.swp
+
+# iOS Files
+.DS_Store
