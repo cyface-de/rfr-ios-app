@@ -2,6 +2,15 @@
 
 This is the project realising an iOS App for the [Ready-for-Robots research project](https://ready-for-robots.de/).
 
+## Known Issues
+
+Currently with XCode 16, building this app causes the following warning:
+
+```
+The archive did not include a dSYM for the Sentry.framework with the UUIDs [AC197E15-7BC2-3FF2-B916-104A6829E3C4]. Ensure that the archive's dSYM folder includes a DWARF file for Sentry.framework with the expected UUIDs.
+```
+This is a [known issue](https://github.com/getsentry/sentry-cocoa/issues/4068) with Sentry and other frameworks together with XCode 16.
+
 ## License
 
 Copyright 2023-2024 Cyface GmbH
