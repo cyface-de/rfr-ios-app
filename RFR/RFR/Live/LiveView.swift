@@ -39,6 +39,8 @@ struct LiveView: View {
             Divider()
             ControlBar(viewModel: viewModel)
                 .padding()
+        }.onAppear {
+            viewModel.onLiveViewAppears()
         }
     }
 

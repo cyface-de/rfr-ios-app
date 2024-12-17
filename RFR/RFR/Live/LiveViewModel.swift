@@ -58,61 +58,29 @@ class LiveViewModel: ObservableObject {
     private var altitudes = [[DataCapturing.Altitude]]()
     /// The ``CapturedDataStorage`` used to save data arriving from the current ``Measurement``to a ``DataStoreStack``
     private var dataStorageProcess: CapturedDataStorage
+    private var sensorCapturer: SensorCapturer
+    private var locationCapturer: LocationCapturer
     /// The current ``Measurement`` presented by the current ``LiveView``.
     var measurement: DataCapturing.Measurement {
         get {
-
             if let measurement = self._measurement {
                 return measurement
             } else {
-                let locationCapturer = SmartphoneLocationCapturer()
-                let sensorCapturer = SmartphoneSensorCapturer()
-                let measurement = if let measurement = try? dataStorageProcess.pausedMeasurement(sensorCapturer: sensorCapturer, locationCapturer: locationCapturer, onFinishedMeasurement) {
-                    measurement
-                } else {
-                    MeasurementImpl(
-                        sensorCapturer: sensorCapturer,
-                        locationCapturer: locationCapturer
-                    )
-                }
+                let measurement = MeasurementImpl(
+                    sensorCapturer: sensorCapturer,
+                    locationCapturer: locationCapturer
+                )
+                self._measurement = measurement
 
                 // Forward finished messages so the UI can update accordingly.
-                let locationFlow = locationFlow()
-                let altitudeFlow = altitudeFlow()
-                let startedFlow = startFlow()
-                let stoppedFlow = stopFlow()
-                let pausedFlow = pauseFlow()
-                let resumedFlow = resumeFlow()
-
-                // Send each received message to the correct stream
-                measurement.events.sink { message in
-                    switch message {
-                    case .capturedLocation(let location):
-                        locationFlow.send(location)
-                    case .capturedAltitude(let altitude):
-                        altitudeFlow.send(altitude)
-                    case .started(timestamp: _):
-                        startedFlow.send(MeasurementState.running)
-                    case .stopped(timestamp: _):
-                        stoppedFlow.send(MeasurementState.stopped)
-                    case .paused(timestamp: _):
-                        pausedFlow.send(MeasurementState.paused)
-                    case .resumed(timestamp: _):
-                        resumedFlow.send(MeasurementState.running)
-                    default:
-                        os_log("Encountered unhandled message %@", log: OSLog.capturingEvent, type: .debug, message.description)
-                    }
-                }.store(in: &cancellables)
-
-                self._measurement = measurement
+                registerFlows()
                 return measurement
             }
         }
     }
+    // TODO: Register Flows on Setup and remove them on setting to nil
     /// The internal cache for the ``Measurement`` currently running.
     private var _measurement: DataCapturing.Measurement?
-    /// The identifier of the currently captured ``Measurement``
-    private var identifier: UInt64?
     /// Store all the running *Combine* process, while they run.
     private var cancellables = [AnyCancellable]()
     /// Captures and publishes any error produced by this model.
@@ -153,6 +121,9 @@ class LiveViewModel: ObservableObject {
     ) {
         self.dataStorageProcess = CapturedCoreDataStorage(dataStoreStack, dataStorageInterval)
         self.dataStoreStack = dataStoreStack
+        self.sensorCapturer = SmartphoneSensorCapturer()
+        self.locationCapturer = SmartphoneLocationCapturer()
+
         guard let formattedSpeed = speedFormatter.string(from: speed as NSNumber) else {
             fatalError()
         }
@@ -233,6 +204,46 @@ class LiveViewModel: ObservableObject {
         self.avoidedEmissions = "\(formattedAvoidedEmissions) g CO₂"
     }
 
+    func onLiveViewAppears() {
+        // Should I resume from paused?
+        do {
+            if _measurement==nil, let measurement = try dataStorageProcess.pausedMeasurement(sensorCapturer: sensorCapturer, locationCapturer: locationCapturer, onFinishedMeasurement) {
+                self._measurement = measurement
+                var locations = [GeoLocation]()
+                var altitudes = [DataCapturing.Altitude]()
+                try dataStoreStack.wrapInContext { context in
+                    let measurementMOFR = MeasurementMO.fetchRequest()
+                    measurementMOFR.predicate = NSPredicate(format: "synchronizable == false && synchronized == false")
+                    let measurementMO = try context.fetch(measurementMOFR).first
+
+                    if let identifier = measurementMO?.identifier {
+                        DispatchQueue.main.async { [weak self] in
+                            self?.measurementName = String(localized: "measurement \(identifier)", comment: "Title label of a running measurement.")
+                        }
+                    }
+
+                    measurementMO?.typedTracks().forEach { track in
+                        self.locations.append([GeoLocation]())
+                        self.altitudes.append([DataCapturing.Altitude]())
+                        track.typedLocations().forEach { location in
+                            locations.append(GeoLocation(managedObject: location))
+                        }
+                        track.typedAltitudes().forEach { altitude in
+                            altitudes.append(DataCapturing.Altitude(managedObject: altitude))
+                        }
+
+                    }
+                }
+                self.registerFlows(locations, altitudes)
+                DispatchQueue.main.async { [weak self] in
+                    self?.measurementState = .paused
+                }
+            }
+        } catch {
+            self.error = error
+        }
+    }
+
     /**
      Called if the user presses the stop button.
      */
@@ -269,6 +280,42 @@ class LiveViewModel: ObservableObject {
         self._measurement = nil
         self.dataStorageProcess.unsubscribe()
         measurementsViewModel.onMeasurementsChanged()
+    }
+
+    private func registerFlows(_ locations: [GeoLocation] = [], _ altitudes: [DataCapturing.Altitude] = []) {
+        let locationFlow = locationFlow()
+        let altitudeFlow = altitudeFlow()
+        let startedFlow = startFlow()
+        let stoppedFlow = stopFlow()
+        let pausedFlow = pauseFlow()
+        let resumedFlow = resumeFlow()
+
+        // Send each received message to the correct stream
+        _measurement?.events.sink { message in
+            switch message {
+            case .capturedLocation(let location):
+                locationFlow.send(location)
+            case .capturedAltitude(let altitude):
+                altitudeFlow.send(altitude)
+            case .started(timestamp: _):
+                startedFlow.send(MeasurementState.running)
+            case .stopped(timestamp: _):
+                stoppedFlow.send(MeasurementState.stopped)
+            case .paused(timestamp: _):
+                pausedFlow.send(MeasurementState.paused)
+            case .resumed(timestamp: _):
+                resumedFlow.send(MeasurementState.running)
+            default:
+                os_log("Encountered unhandled message %@", log: OSLog.capturingEvent, type: .debug, message.description)
+            }
+        }.store(in: &cancellables)
+
+        Task {
+            locations.forEach { location in locationFlow.send(location) }
+        }
+        Task {
+            altitudes.forEach { altitude in altitudeFlow.send(altitude) }
+        }
     }
 
     /// Setup Combine flow to handle ``Measurement`` start events.

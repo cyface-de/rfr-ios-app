@@ -73,6 +73,7 @@ class MeasurementsViewModel: ObservableObject {
             do {
                 try dataStoreStack.wrapInContext { context in
                     let request = MeasurementMO.fetchRequest()
+                    request.predicate = NSPredicate(format: "synchronizable == true")
                     try request.execute().forEach { measurement in
                         measurements.append(load(measurement: measurement))
                     }

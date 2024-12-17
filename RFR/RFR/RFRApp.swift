@@ -173,18 +173,6 @@ class AppModel: ObservableObject {
             Task {
                 do {
                     try await dataStoreStack.setup()
-
-
-                    // Workaround to reupload previously failed uploads.
-                    try dataStoreStack.wrapInContext { context in
-                        let request = MeasurementMO.fetchRequest()
-                        request.predicate = NSPredicate(format: "synchronized=false AND synchronizable=false")
-                        let result = try request.execute()
-                        for measurementModelObject in result {
-                            measurementModelObject.synchronizable = true
-                        }
-                        try context.save()
-                    }*/
                     try await measurementsViewModel.setup()
 
                     DispatchQueue.main.async { [weak self] in
