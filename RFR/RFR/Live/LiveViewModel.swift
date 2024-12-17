@@ -250,7 +250,7 @@ class LiveViewModel: ObservableObject {
             try measurement.resume()
         } else if !measurement.isPaused && !measurement.isRunning { // Is stopped
             let identifier  = try dataStorageProcess.subscribe(to: measurement,"BICYCLE", onFinishedMeasurement)
-            measurementName = String(localized: "measurement \(identifier)", comment: "Title label of a running measurement.")
+            measurementName = "\(NSLocalizedString("de.cyface.rfr.measurement.title", comment: "The title name of a measurement")) \(identifier)"
             try measurement.start()
         }
     }

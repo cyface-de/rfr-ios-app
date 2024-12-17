@@ -79,7 +79,7 @@ class Measurement: Identifiable, ObservableObject {
     var avoidedEmissions: String
     /// The title to display for the ``Measurement``
     var title: String {
-        "Messung \(id)"
+        "\(NSLocalizedString("de.cyface.rfr.measurement.title", comment: "The title name of a measurement")) \(id)"
     }
     /// The height profile data used to display a height graph.
     let heightProfile: [Altitude]

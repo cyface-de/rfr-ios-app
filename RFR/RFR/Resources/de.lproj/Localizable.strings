@@ -107,6 +107,9 @@ The returned status code is provided as an Int as the first parameter! */
 /* The subject of the participation E-Mail when sending a voucher. */
 "de.cyface.rfr.label.VoucherViewModel.mail_subject" = "Gewinnlos: \\(voucher.code)";
 
+/* The title name of a measurement */
+"de.cyface.rfr.measurement.title" = "Messung";
+
 /* Label telling the user when the next event happens. The date is provided as the first arguemnt. */
 "de.cyface.rfr.text.NoVoucher.next_event" = "Nächste Gewinnaktion ab %@";
 
