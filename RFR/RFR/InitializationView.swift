@@ -77,13 +77,14 @@ struct InitializationView: View {
     }
 }
 
-#if DEBUG
 let config = try! ConfigLoader.load()
 let mockDataStoreStack = MockDataStoreStack()
 let measurementsViewModel = MeasurementsViewModel(dataStoreStack: mockDataStoreStack)
 let mockUploadFactory = MockUploadFactory()
 let authenticator = StaticAuthenticator()
 let incentivesUrl = URL(string: config.incentivesUrl)!
+let sensorValueFileFactory = try! DefaultSensorValueFileFactory()
+
 let uploadProcessBuilder = DefaultUploadProcessBuilder(
     collectorUrl: URL(string: "https://localhost:8080/api/v4")!,
     sessionRegistry: DefaultSessionRegistry(),
@@ -100,7 +101,8 @@ let synchronizationViewModel = SynchronizationViewModel(
 let liveViewModel = LiveViewModel(
     dataStoreStack: mockDataStoreStack,
     dataStorageInterval: 5.0,
-    measurementsViewModel: measurementsViewModel
+    measurementsViewModel: measurementsViewModel,
+    sensorValueFileFactory: sensorValueFileFactory
 )
 
 let voucherViewModel2 = VoucherViewModel(
@@ -128,4 +130,3 @@ let voucherViewModel2 = VoucherViewModel(
         authenticator: authenticator
     )
 }
-#endif

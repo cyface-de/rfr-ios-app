@@ -90,16 +90,17 @@ struct ControlBar: View {
     }
 }
 
-#if DEBUG
 #Preview("Stopped") {
     let mockDataStoreStack = MockDataStoreStack()
     let measurementsViewModel = MeasurementsViewModel(dataStoreStack: mockDataStoreStack)
+    let sensorValueFileFactory = try! DefaultSensorValueFileFactory()
 
-    return ControlBar(
+    ControlBar(
         viewModel: LiveViewModel(
             dataStoreStack: mockDataStoreStack,
             dataStorageInterval: 5.0,
-            measurementsViewModel: measurementsViewModel
+            measurementsViewModel: measurementsViewModel,
+            sensorValueFileFactory: sensorValueFileFactory
         )
     )
 }
@@ -107,13 +108,15 @@ struct ControlBar: View {
 #Preview("Running") {
     let mockDataStoreStack = MockDataStoreStack()
     let measurementsViewModel = MeasurementsViewModel(dataStoreStack: mockDataStoreStack)
+    let sensorValueFileFactory = try! DefaultSensorValueFileFactory()
 
-    return ControlBar(
+    ControlBar(
         viewModel: LiveViewModel(
             measurementState: .running,
             dataStoreStack: MockDataStoreStack(),
             dataStorageInterval: 5.0,
-            measurementsViewModel: measurementsViewModel
+            measurementsViewModel: measurementsViewModel,
+            sensorValueFileFactory: sensorValueFileFactory
         )
     )
 }
@@ -121,13 +124,15 @@ struct ControlBar: View {
 #Preview("Paused") {
     let mockDataStoreStack = MockDataStoreStack()
     let measurementsViewModel = MeasurementsViewModel(dataStoreStack: mockDataStoreStack)
+    let sensorValueFileFactory = try! DefaultSensorValueFileFactory()
 
-    return ControlBar(
+    ControlBar(
         viewModel: LiveViewModel(
             measurementState: .paused,
             dataStoreStack: MockDataStoreStack(),
             dataStorageInterval: 5.0,
-            measurementsViewModel: measurementsViewModel
+            measurementsViewModel: measurementsViewModel,
+            sensorValueFileFactory: sensorValueFileFactory
         )
     )
 }
@@ -135,14 +140,15 @@ struct ControlBar: View {
 #Preview("Showing Error") {
     let mockDataStoreStack = MockDataStoreStack()
     let measurementsViewModel = MeasurementsViewModel(dataStoreStack: mockDataStoreStack)
+    let sensorValueFileFactory = try! DefaultSensorValueFileFactory()
 
-    return ControlBar(
+    ControlBar(
         viewModel: LiveViewModel(
             dataStoreStack: MockDataStoreStack(),
             dataStorageInterval: 5.0,
-            measurementsViewModel: measurementsViewModel
+            measurementsViewModel: measurementsViewModel,
+            sensorValueFileFactory: sensorValueFileFactory
         ),
         error: MeasurementError.isPaused
     )
 }
-#endif

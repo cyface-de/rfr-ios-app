@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Cyface GmbH
+ * Copyright 2023-2025 Cyface GmbH
  *
  * This file is part of the Ready for Robots iOS App.
  *
@@ -31,12 +31,13 @@ struct RFRApp: App {
     /// Especially reacting to backround network requests needs to be handled here.
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     /// The application, which is required to store and load the authentication state of this application.
-    @ObservedObject var appModel = AppModel()
+    @ObservedObject var appModel: AppModel
     private let sessionEventDelegate = SessionEventDelegate()
 
 
     /// Setup Sentry tracing for the whole application.
     init() {
+        appModel = AppModel(sessionEventDelegate)
         appDelegate.delegate = sessionEventDelegate
 
         let enableTracing = (try? appModel.config.getEnableSentryTracing()) ?? false
@@ -121,7 +122,7 @@ class AppModel: ObservableObject {
     /// Start the setup process.
     ///
     /// Please refer to ``initialized`` to see if initialization has actually finished.
-    init() {
+    init(_ sessionEventDelegate: SessionEventDelegate) {
         do {
             let clientId = config.clientId
             let uploadEndpoint = try config.getUploadEndpoint()
@@ -129,6 +130,7 @@ class AppModel: ObservableObject {
             let redirectURI = try config.getRedirectUri()
             let apiEndpoint = try config.getApiEndpoint()
             let incentivesUrl = try config.getIncentivesUrl()
+            let sensorValueFileFactory = try DefaultSensorValueFileFactory()
 
             self.authenticator = AppModel.createAuthenticator(
                 issuer: issuer,
@@ -143,7 +145,10 @@ class AppModel: ObservableObject {
                 collectorUrl: uploadEndpoint,
                 uploadFactory: uploadFactory,
                 dataStoreStack: dataStoreStack,
-                authenticator: authenticator
+                authenticator: authenticator,
+                sensorValueFileFactory: sensorValueFileFactory,
+                backgroundUrlSessionEventDelegate: sessionEventDelegate
+
             )
 
             measurementsViewModel = MeasurementsViewModel(
@@ -152,7 +157,8 @@ class AppModel: ObservableObject {
             liveViewModel = LiveViewModel(
                 dataStoreStack: dataStoreStack,
                 dataStorageInterval: 5.0,
-                measurementsViewModel: measurementsViewModel
+                measurementsViewModel: measurementsViewModel,
+                sensorValueFileFactory: sensorValueFileFactory
             )
             syncViewModel = SynchronizationViewModel(
                 dataStoreStack: dataStoreStack,

@@ -59,18 +59,19 @@ struct LiveView: View {
     }
 }
 
-#if DEBUG
 #Preview("Stopped") {
     let mockDataStoreStack = MockDataStoreStack()
     let measurementsViewModel = MeasurementsViewModel(dataStoreStack: mockDataStoreStack)
+    let sensorValueFileFactory = try! DefaultSensorValueFileFactory()
 
-    return LiveView(viewModel: LiveViewModel(
+    LiveView(viewModel: LiveViewModel(
         speed: 21.0,
         averageSpeed: 15.0,
         measurementState: .stopped,
         dataStoreStack: MockDataStoreStack(),
         dataStorageInterval: 5.0,
-        measurementsViewModel: measurementsViewModel
+        measurementsViewModel: measurementsViewModel,
+        sensorValueFileFactory: sensorValueFileFactory
     )
     )
 }
@@ -78,15 +79,16 @@ struct LiveView: View {
 #Preview("Running") {
     let mockDataStoreStack = MockDataStoreStack()
     let measurementsViewModel = MeasurementsViewModel(dataStoreStack: mockDataStoreStack)
+    let sensorValueFileFactory = try! DefaultSensorValueFileFactory()
 
-    return LiveView(viewModel: LiveViewModel(
+    LiveView(viewModel: LiveViewModel(
         measurementState: .running,
         dataStoreStack: MockDataStoreStack(),
         dataStorageInterval: 5.0,
-        measurementsViewModel: measurementsViewModel
+        measurementsViewModel: measurementsViewModel,
+        sensorValueFileFactory: sensorValueFileFactory
     ))
 }
-#endif
 
 /**
  A view showing live statistics about the current measurement.

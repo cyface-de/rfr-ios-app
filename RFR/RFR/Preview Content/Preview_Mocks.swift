@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with the Ready for Robots App. If not, see <http://www.gnu.org/licenses/>.
  */
-#if DEBUG
 import Foundation
 import DataCapturing
 import CoreData
@@ -163,5 +162,3 @@ struct MockUpload: DataCapturing.Upload {
     
 
 }
-
-#endif

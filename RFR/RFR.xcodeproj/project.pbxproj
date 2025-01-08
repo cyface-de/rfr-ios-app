@@ -1254,7 +1254,7 @@
 			repositoryURL = "https://github.com/cyface-de/ios-sensor-library";
 			requirement = {
 				kind = exactVersion;
-				version = 13.0.0;
+				version = 13.0.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

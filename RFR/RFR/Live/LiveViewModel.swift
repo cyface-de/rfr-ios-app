@@ -117,9 +117,11 @@ class LiveViewModel: ObservableObject {
         avoidedEmissions: Double = 0.0,
         dataStoreStack: DataStoreStack,
         dataStorageInterval: Double,
-        measurementsViewModel: MeasurementsViewModel
+        measurementsViewModel: MeasurementsViewModel,
+        // TODO: Why can I not use SensorValueFileFactory as a protocol here?
+        sensorValueFileFactory: DefaultSensorValueFileFactory
     ) {
-        self.dataStorageProcess = CapturedCoreDataStorage(dataStoreStack, dataStorageInterval)
+        self.dataStorageProcess = CapturedCoreDataStorage(dataStoreStack, dataStorageInterval, sensorValueFileFactory)
         self.dataStoreStack = dataStoreStack
         self.sensorCapturer = SmartphoneSensorCapturer()
         self.locationCapturer = SmartphoneLocationCapturer()
@@ -207,8 +209,9 @@ class LiveViewModel: ObservableObject {
     func onLiveViewAppears() {
         // Should I resume from paused?
         do {
-            if _measurement==nil, let measurement = try dataStorageProcess.pausedMeasurement(sensorCapturer: sensorCapturer, locationCapturer: locationCapturer, onFinishedMeasurement) {
-                self._measurement = measurement
+            if _measurement==nil, let pausedMeasurement = try dataStorageProcess.pausedMeasurement(sensorCapturer: sensorCapturer, locationCapturer: locationCapturer, onFinishedMeasurement) {
+                self._measurement = pausedMeasurement.0
+                let identifier = pausedMeasurement.1
                 var locations = [GeoLocation]()
                 var altitudes = [DataCapturing.Altitude]()
                 try dataStoreStack.wrapInContext { context in
@@ -217,9 +220,7 @@ class LiveViewModel: ObservableObject {
                     let measurementMO = try context.fetch(measurementMOFR).first
 
                     if let identifier = measurementMO?.identifier {
-                        DispatchQueue.main.async { [weak self] in
-                            self?.measurementName = String(localized: "measurement \(identifier)", comment: "Title label of a running measurement.")
-                        }
+
                     }
 
                     measurementMO?.typedTracks().forEach { track in
@@ -237,6 +238,7 @@ class LiveViewModel: ObservableObject {
                 self.registerFlows(locations, altitudes)
                 DispatchQueue.main.async { [weak self] in
                     self?.measurementState = .paused
+                     self?.measurementName = String(localized: "measurement \(identifier)", comment: "Title label of a running measurement.")
                 }
             }
         } catch {
