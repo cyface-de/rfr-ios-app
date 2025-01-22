@@ -219,10 +219,6 @@ class LiveViewModel: ObservableObject {
                     measurementMOFR.predicate = NSPredicate(format: "synchronizable == false && synchronized == false")
                     let measurementMO = try context.fetch(measurementMOFR).first
 
-                    if let identifier = measurementMO?.identifier {
-
-                    }
-
                     measurementMO?.typedTracks().forEach { track in
                         self.locations.append([GeoLocation]())
                         self.altitudes.append([DataCapturing.Altitude]())

@@ -71,18 +71,11 @@ class MeasurementsViewModel: ObservableObject {
     func setup() async throws {
         try await withCheckedThrowingContinuation { continuation in
             do {
-                try dataStoreStack.wrapInContext { context in
-                    let request = MeasurementMO.fetchRequest()
-                    request.predicate = NSPredicate(format: "synchronizable == true")
-                    try request.execute().forEach { measurement in
-                        measurements.append(load(measurement: measurement))
-                    }
-
-                    DispatchQueue.main.async { [weak self] in
-                        self?.updateStatistics()
-                        self?.isLoading = false
-                        continuation.resume()
-                    }
+                measurements.append(contentsOf: try displayableMeasurements())
+                DispatchQueue.main.async { [weak self] in
+                    self?.updateStatistics()
+                    self?.isLoading = false
+                    continuation.resume()
                 }
             } catch {
                 continuation.resume(throwing: error)
@@ -174,32 +167,40 @@ class MeasurementsViewModel: ObservableObject {
 
     /// Causes a reload and redrawn each time measurement data changes.
     public func onMeasurementsChanged() {
-        do {
-            try dataStoreStack.wrapInContext { context in
-                let measurementRequest = MeasurementMO.fetchRequest()
-                let storedMeasurements = try measurementRequest.execute()
-                os_log("Loaded changed measurements", log: OSLog.measurement, type: .debug)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
 
-                storedMeasurements.filter { storedMeasurement in
-                    for measurement in measurements {
-                        if measurement.id == storedMeasurement.identifier {
-                            return false
-                        }
-                    }
-                    return true
-                }.forEach { filtered in
-                    let measurement = self.load(measurement: filtered)
-                    DispatchQueue.main.async { [weak self] in
-                        if let self = self {
-                            self.measurements.append(measurement)
-                            updateStatistics()
-                        }
-                    }
-                }
+            self.measurements.removeAll()
+            do {
+                self.measurements.append(contentsOf: try self.displayableMeasurements())
+
+                /*try dataStoreStack.wrapInContext { context in
+                 let measurementRequest = MeasurementMO.fetchRequest()
+                 let storedMeasurements = try measurementRequest.execute()
+                 os_log("Loaded changed measurements", log: OSLog.measurement, type: .debug)
+
+                 storedMeasurements.filter { storedMeasurement in
+                 for measurement in measurements {
+                 if measurement.id == storedMeasurement.identifier {
+                 return false
+                 }
+                 }
+                 return true
+                 }.forEach { filtered in
+                 let measurement = self.load(measurement: filtered)
+                 DispatchQueue.main.async { [weak self] in
+                 if let self = self {
+                 self.measurements.append(measurement)
+                 updateStatistics()
+                 }
+                 }
+                 }
+                 }*/
+            } catch {
+                os_log("%@", log: OSLog.measurement, type: .error, error.localizedDescription)
+                self.error = error
             }
-        } catch {
-            os_log("%@", log: OSLog.measurement, type: .error, error.localizedDescription)
-            self.error = error
+            self.updateStatistics()
         }
     }
 
@@ -275,5 +276,21 @@ class MeasurementsViewModel: ObservableObject {
     /// Search for the avoided emissions of the captured measurement with the most avoided emissions in gram.
     private func calculateMaxAvoidedEmissions() -> Double {
         return measurements.map { $0._avoidedEmissions }.max() ?? 0.0
+    }
+
+    private func displayableMeasurements() throws -> [Measurement] {
+        return try dataStoreStack.wrapInContextReturn { context in
+            var ret = [Measurement]()
+            let request = MeasurementMO.fetchRequest()
+
+            try request.execute().forEach { measurement in
+                let uploadSessionRequest = UploadSession.fetchRequest()
+                uploadSessionRequest.predicate = NSPredicate(format: "measurement == %@", measurement)
+                if (try? uploadSessionRequest.execute().first) != nil || measurement.synchronizable {
+                    ret.append(load(measurement: measurement))
+                }
+            }
+            return ret
+        }
     }
 }

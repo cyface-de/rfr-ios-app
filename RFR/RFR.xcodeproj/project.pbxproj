@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AAFA7FCC2CF74D1B00DFC4BE /* DataCapturing in Frameworks */ = {isa = PBXBuildFile; productRef = AAFA7FCB2CF74D1B00DFC4BE /* DataCapturing */; };
+		AA3F53302D37BFC300CD91EB /* DataCapturing in Frameworks */ = {isa = PBXBuildFile; productRef = AA3F532F2D37BFC300CD91EB /* DataCapturing */; };
 		AAFA7FD02CF7526D00DFC4BE /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		AAFA7FD12CF7526D00DFC4BE /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		CE4EF86500584D79AB8A838B /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = C3EB6C38495944FAB62B0C15 /* Sentry */; };
@@ -74,7 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AAFA7FCC2CF74D1B00DFC4BE /* DataCapturing in Frameworks */,
+				AA3F53302D37BFC300CD91EB /* DataCapturing in Frameworks */,
 				CE4EF86500584D79AB8A838B /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -141,8 +141,8 @@
 			);
 			name = RFR;
 			packageProductDependencies = (
-				AAFA7FCB2CF74D1B00DFC4BE /* DataCapturing */,
 				C3EB6C38495944FAB62B0C15 /* Sentry */,
+				AA3F532F2D37BFC300CD91EB /* DataCapturing */,
 			);
 			productName = RFR;
 			productReference = AAFA7F9D2CF74CA600DFC4BE /* RFR.app */;
@@ -222,14 +222,13 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 				de,
 			);
 			mainGroup = AAFA7F942CF74CA600DFC4BE;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				AAFA7FCA2CF74D1B00DFC4BE /* XCRemoteSwiftPackageReference "ios-sensor-library" */,
 				1F7007BE0D1F46C4AEFC865F /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				AA3F532E2D37BFC300CD91EB /* XCRemoteSwiftPackageReference "ios-sensor-library" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AAFA7F9E2CF74CA600DFC4BE /* Products */;
@@ -453,7 +452,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RFR/Preview Content\"";
 				DEVELOPMENT_TEAM = 45GZ5C9N64;
@@ -471,7 +470,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.4.0;
+				MARKETING_VERSION = 3.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = de.cyface.RFR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -490,7 +489,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RFR/Preview Content\"";
 				DEVELOPMENT_TEAM = 45GZ5C9N64;
@@ -508,7 +507,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.4.0;
+				MARKETING_VERSION = 3.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = de.cyface.RFR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -682,7 +681,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RFR/Preview Content\"";
 				DEVELOPMENT_TEAM = 45GZ5C9N64;
@@ -700,7 +699,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.4.0;
+				MARKETING_VERSION = 3.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = de.cyface.RFR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -822,7 +821,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RFR/Preview Content\"";
 				DEVELOPMENT_TEAM = 45GZ5C9N64;
@@ -840,7 +839,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.4.0;
+				MARKETING_VERSION = 3.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = de.cyface.RFR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -968,7 +967,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RFR/Preview Content\"";
 				DEVELOPMENT_TEAM = 45GZ5C9N64;
@@ -986,7 +985,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.4.0;
+				MARKETING_VERSION = 3.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = de.cyface.RFR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1107,7 +1106,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RFR/Preview Content\"";
 				DEVELOPMENT_TEAM = 45GZ5C9N64;
@@ -1125,7 +1124,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.4.0;
+				MARKETING_VERSION = 3.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = de.cyface.RFR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1249,20 +1248,20 @@
 				minimumVersion = 8.0.0;
 			};
 		};
-		AAFA7FCA2CF74D1B00DFC4BE /* XCRemoteSwiftPackageReference "ios-sensor-library" */ = {
+		AA3F532E2D37BFC300CD91EB /* XCRemoteSwiftPackageReference "ios-sensor-library" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/cyface-de/ios-sensor-library";
 			requirement = {
 				kind = exactVersion;
-				version = 13.0.1;
+				version = 13.0.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		AAFA7FCB2CF74D1B00DFC4BE /* DataCapturing */ = {
+		AA3F532F2D37BFC300CD91EB /* DataCapturing */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AAFA7FCA2CF74D1B00DFC4BE /* XCRemoteSwiftPackageReference "ios-sensor-library" */;
+			package = AA3F532E2D37BFC300CD91EB /* XCRemoteSwiftPackageReference "ios-sensor-library" */;
 			productName = DataCapturing;
 		};
 		C3EB6C38495944FAB62B0C15 /* Sentry */ = {

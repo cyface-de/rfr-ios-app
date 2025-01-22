@@ -28,18 +28,17 @@ import Sentry
 
  - Author: Klemens Muthmann
  */
-class SynchronizationViewModel: NSObject, ObservableObject {
+class SynchronizationViewModel: /*NSObject,*/ ObservableObject {
     /// Showing an error dialog if not `nil`.
     @Published var error: Error?
     /// A publisher about changes to the ``UploadStatus`` of the currently synchronizing measurements.
     //let uploadStatusPublisher: PassthroughSubject<UploadStatus, Never>
     /// The data store stack used to access data storage to read measurements from.
     let dataStoreStack: DataStoreStack
-    /// A builder responsible for creating new ``UploadProcess`` instances on each new upload.
-    let processBuilder: UploadProcessBuilder
     /// Store the reporting of ``UploadStatus``events here, so the ``UploadProcess`` keeps reporting.
-    //var uploadStatusCancellable: AnyCancellable?
+    var uploadStatusCancellable: AnyCancellable?
     let measurementsViewModel: MeasurementsViewModel
+    var uploadProcess: UploadProcess
 
     /// Create a new completely initialized object of this class.
     /// Nothing surprising is happening here.
@@ -52,40 +51,37 @@ class SynchronizationViewModel: NSObject, ObservableObject {
         measurementsViewModel: MeasurementsViewModel
     ) {
         self.dataStoreStack = dataStoreStack
-        //self.uploadStatusPublisher = PassthroughSubject<UploadStatus, Never>()
-        self.processBuilder = uploadProcessBuilder
         self.measurementsViewModel = measurementsViewModel
         self.error = nil
+        self.uploadProcess = uploadProcessBuilder.build()
+
+        self.uploadStatusCancellable = uploadProcess.uploadStatus.sink(receiveValue: onChanged)
     }
 
     /// Start synchronization for all local but not yet synchronized measurements.
     func synchronize() async {
-        // TODO: Run this on a background thread
-        var uploadProcess = processBuilder.build()
-        /*self.uploadStatusCancellable = uploadProcess.uploadStatus.sink { [weak self] status in
-            self?.uploadStatusPublisher.send(UploadStatus(measurement: status.upload.measurement, status: status.status))
-        }*/
-        do {
-            let measurements = try loadSynchronizableMeasurements()
-            os_log("Sync: Synchronizing %d measurements!", log: OSLog.synchronization, type: .debug, measurements.count)
-            setToSynchronizing(measurements)
-            for measurement in measurements {
-                os_log(.debug, log: OSLog.synchronization, "Sync: Starting synchronization of measurement %d!", measurement.identifier)
-                do {
-                    _ = try await uploadProcess.upload(measurement: measurement)
-                    os_log(.debug, log: OSLog.synchronization, "Sync: Finished synchronization of measurement %d!", measurement.identifier)
-                    setToFinished(measurement)
-                } catch {
-                    SentrySDK.capture(error: error)
-                    os_log(.error, log: OSLog.synchronization, "Sync: Failed synchronizing measurement %d!", measurement.identifier)
-                    os_log("Sync: Synchronization failed due to: %@", log: OSLog.synchronization, type: .error, error.localizedDescription)
-                    setToFinishedWithError(measurement, error)
-                    //uploadStatusPublisher.send(UploadStatus(measurement: measurement, status: .finishedWithError(cause: error)))
+        let syncTask = Task {
+            do {
+                let measurements = try loadSynchronizableMeasurements()
+                os_log("Sync: Synchronizing %d measurements!", log: OSLog.synchronization, type: .debug, measurements.count)
+
+                for measurement in measurements {
+                    os_log(.debug, log: OSLog.synchronization, "Sync: Starting synchronization of measurement %d!", measurement.identifier)
+                    do {
+                        _ = try await uploadProcess.upload(measurement: measurement)
+                    } catch {
+                        SentrySDK.capture(error: error)
+                        os_log(.error, log: OSLog.synchronization, "Sync: Failed synchronizing measurement %d!", measurement.identifier)
+                        os_log("Sync: Synchronization failed due to: %@", log: OSLog.synchronization, type: .error, error.localizedDescription)
+                        setToFinishedWithError(measurement, error)
+                    }
+                }
+            } catch {
+                SentrySDK.capture(error: error)
+                DispatchQueue.main.async { [weak self] in
+                    self?.error = error
                 }
             }
-        } catch {
-            SentrySDK.capture(error: error)
-            self.error = error
         }
     }
 
@@ -99,16 +95,31 @@ class SynchronizationViewModel: NSObject, ObservableObject {
     }
 
     /// Set all the synchronizing measurements state to `.synchronizing`.
-    private func setToSynchronizing(_ measurements: [FinishedMeasurement]) {
+    private func setToSynchronizing(_ finishedMeasurement: FinishedMeasurement) {
         measurementsViewModel.measurements.filter { measurement in
-            for finishedMeasurement in measurements {
-                if measurement.id == finishedMeasurement.identifier {
-                    return true
-                }
-            }
-            return false
+            return measurement.id == finishedMeasurement.identifier
         }.forEach { measurement in
-            measurement.synchronizationState = .synchronizing
+            DispatchQueue.main.async {
+                measurement.synchronizationState = .synchronizing
+            }
+        }
+    }
+
+    private func onChanged(uploadStatus status: DataCapturing.UploadStatus) {
+        let measurement = status.upload.measurement
+        switch status.status {
+        case .started:
+            setToSynchronizing(measurement)
+            os_log(.debug, log: OSLog.synchronization, "Sync: Started synchronization of measurement %d!", measurement.identifier)
+        case .finishedSuccessfully:
+            os_log(.debug, log: OSLog.synchronization, "Sync: Successfully finished synchronization of measurement %d!", measurement.identifier)
+            setToFinished(measurement)
+        case .finishedUnsuccessfully:
+            os_log(.debug, log: OSLog.synchronization, "Sync: Finished synchronization of measurement %d without success!", measurement.identifier)
+            setToUnfinished(measurement)
+        case .finishedWithError(cause: let error):
+            os_log(.error, log: OSLog.synchronization, "Sync: Failed synchronization of measurement %d!", measurement.identifier)
+            setToFinishedWithError(measurement, error)
         }
     }
 
@@ -118,7 +129,19 @@ class SynchronizationViewModel: NSObject, ObservableObject {
     private func setToFinished(_ measurement: FinishedMeasurement) {
         runOn(measurement: measurement) { mayBeMeasurement in
             if let mayBeMeasurement = mayBeMeasurement {
-                mayBeMeasurement.synchronizationState = .synchronized
+                DispatchQueue.main.async {
+                    mayBeMeasurement.synchronizationState = .synchronized
+                }
+            }
+        }
+    }
+
+    private func setToUnfinished(_ measurement: FinishedMeasurement) {
+        runOn(measurement: measurement) { mayBeMeasurement in
+            if let mayBeMeasurement = mayBeMeasurement {
+                DispatchQueue.main.async {
+                    mayBeMeasurement.synchronizationState = .synchronizable
+                }
             }
         }
     }
@@ -129,7 +152,9 @@ class SynchronizationViewModel: NSObject, ObservableObject {
     private func setToFinishedWithError(_ measurement: FinishedMeasurement, _ error: Error) {
         runOn(measurement: measurement) { mayBeMeasurement in
             if let mayBeMeasurement = mayBeMeasurement {
-                mayBeMeasurement.synchronizationState = .unsynchronizable
+                DispatchQueue.main.async {
+                    mayBeMeasurement.synchronizationState = .unsynchronizable
+                }
             }
         }
     }

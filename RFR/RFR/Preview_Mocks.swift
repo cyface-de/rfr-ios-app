@@ -124,6 +124,16 @@ struct MockUploadFactory: UploadFactory {
 }
 
 struct MockUpload: DataCapturing.Upload {
+    static func == (lhs: MockUpload, rhs: MockUpload) -> Bool {
+        return lhs.measurement.identifier == rhs.measurement.identifier
+    }
+    
+    var failures =  [Error]()
+
+    func onFailed(cause: Error) throws {
+        // Nothing to do here
+    }
+    
     var failedUploadsCounter: Int = 0
 
     var measurement: DataCapturing.FinishedMeasurement = FinishedMeasurement(identifier: 0)
@@ -159,6 +169,4 @@ struct MockUpload: DataCapturing.Upload {
     func onFailed() throws {
         // Nothing to do here
     }
-    
-
 }

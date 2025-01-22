@@ -102,7 +102,6 @@ extension OAuthLoginView: UIViewControllerRepresentable {
 
 #if DEBUG
 #Preview {
-    @State var loggedIn = true
     @State var errors: [String] = []
 
     return OAuthLoginView(

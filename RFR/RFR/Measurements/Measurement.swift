@@ -28,8 +28,6 @@ import MapKit
  A class for objects representing a measurement as required by the user interface of the application.`
 
  - Author: Klemens Muthmann
- - Version: 1.0.0
- - Since 3.1.1
  */
 class Measurement: Identifiable, ObservableObject {
     // MARK: - Properties
@@ -193,8 +191,6 @@ extension Measurement: Hashable {
  Each measurement start as synchronizable, switches to synchronizing as soon as the upload is running and ends as synchronized.
 
  - Author: Klemens Muthmann
- - Version: 1.0.1
- - Since: 3.1.1
  */
 enum SynchronizationState {
     /// Identifies a measurement that is ready to be synchronized. This mostly means it was finished by pressing stop.
@@ -212,16 +208,24 @@ enum SynchronizationState {
         request.predicate = NSPredicate(format: "measurement=%@", measurement)
         request.fetchLimit = 1
         do {
-            let sessions = try request.execute()
-            if !sessions.isEmpty {
-                return .synchronizing
-            } else if measurement.synchronized {
-                return .synchronized
-            } else if measurement.synchronizable {
-                return .synchronizable
-            } else {
-                return .unsynchronizable
+            if let session = try request.execute().first {
+                if let lastMessage = session.typedOrderedUploadProtocol().last {
+                    if lastMessage.causedError {
+                        return .unsynchronizable
+                    } else {
+                        switch RequestType(rawValue: lastMessage.command) {
+                        case .upload:
+                            if lastMessage.httpStatus == 201 {
+                                return .synchronized
+                            }
+                        default:
+                            return .synchronizable
+                        }
+                    }
+                }
             }
+            return .synchronizable
+
         } catch {
             return .unsynchronizable
         }
